@@ -68,7 +68,7 @@
             </button>
         </div>
 
-        {{-- Role Information Display --}}
+        {{-- In login.blade.php demo credentials section --}}
         <div class="mt-4 p-3 bg-light rounded">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -78,11 +78,15 @@
                         <small class="text-muted">admin@example.com / password</small>
                     </div>
                     <div class="mt-1">
-                        <span class="badge bg-warning text-dark me-1">Manager</span>
+                        <span class="badge bg-warning text-dark me-1">Vendor</span>
+                        <small class="text-muted">vendor@example.com / password</small>
+                    </div>
+                    <div class="mt-1">
+                        <span class="badge bg-info me-1">Manager</span>
                         <small class="text-muted">manager@example.com / password</small>
                     </div>
                     <div class="mt-1">
-                        <span class="badge bg-info me-1">User</span>
+                        <span class="badge bg-success me-1">User</span>
                         <small class="text-muted">user@example.com / password</small>
                     </div>
                 </div>

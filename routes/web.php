@@ -1,75 +1,75 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RentalController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
 
 // Public routes
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return redirect()->route('cars.index');
+});
 
-// ============================================
-// AUTHENTICATED ROUTES
-// ============================================
+// Car routes (public)
+Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
+Route::get('/cars/search', [CarController::class, 'search'])->name('cars.search');
+Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.show');
+
+// Authenticated routes
 Route::middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Single Dashboard - Role-based view
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    // Rental routes
+    Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
+    Route::get('/rentals/create/{car}', [RentalController::class, 'create'])->name('rentals.create');
+    Route::post('/rentals/{car}', [RentalController::class, 'store'])->name('rentals.store');
+    Route::get('/rentals/{rental}', [RentalController::class, 'show'])->name('rentals.show');
+    Route::patch('/rentals/{rental}/cancel', [RentalController::class, 'cancel'])->name('rentals.cancel');
 
-    // Profile routes
-    Route::prefix('profile')->group(function () {
-        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Payment routes
+    Route::get('/payment/{payment}', [PaymentController::class, 'process'])->name('payments.process');
+    Route::post('/payment/{payment}/confirm', [PaymentController::class, 'confirm'])->name('payments.confirm');
+
+    // Vendor routes
+    Route::middleware(['can:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
+        Route::get('/dashboard', [VendorController::class, 'dashboard'])->name('dashboard');
+        Route::get('/cars', [VendorController::class, 'cars'])->name('cars');
+        Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
+        Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+        Route::get('/rentals', [VendorController::class, 'rentals'])->name('rentals');
     });
 
-    // ============================================
-    // ADMIN ROUTES (Admin only)
-    // ============================================
-    Route::middleware(['can:admin'])->prefix('admin')->name('admin.')->group(function () {
-        // User Management
-        Route::get('/users', [AdminController::class, 'users'])->name('users');
-        Route::get('/users/{user}', [AdminController::class, 'show'])->name('users.show');
-        Route::get('/users/{user}/edit', [AdminController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
-        Route::post('/users/{user}/restore', [AdminController::class, 'restore'])->name('users.restore');
-        Route::delete('/users/{user}/force-delete', [AdminController::class, 'forceDelete'])->name('users.force-delete');
-
-        // Role Management
-        Route::get('/roles', [AdminController::class, 'roles'])->name('roles');
-
-        // System Settings
-        Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
-
-        // Reports
-        Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    });
-
-    // ============================================
-    // MANAGER ROUTES (Manager and Admin)
-    // ============================================
+    // Manager routes
     Route::middleware(['can:manager'])->prefix('manager')->name('manager.')->group(function () {
-        // Projects
         Route::get('/projects', [ManagerController::class, 'projects'])->name('projects');
-
-        // Team Management
         Route::get('/team', [ManagerController::class, 'team'])->name('team');
-
-        // Reports
         Route::get('/reports', [ManagerController::class, 'reports'])->name('reports');
+    });
+
+    // Admin routes
+    Route::middleware(['can:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::get('/roles', [AdminController::class, 'roles'])->name('roles');
+        Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+        Route::get('/cars', [AdminController::class, 'cars'])->name('cars');
+        Route::patch('/cars/{car}/approve', [AdminController::class, 'approveCar'])->name('cars.approve');
+        Route::get('/vendors', [AdminController::class, 'vendors'])->name('vendors');
+        Route::get('/rentals', [AdminController::class, 'rentals'])->name('rentals');
     });
 });
 
-// Auth routes
-require __DIR__ . '/auth.php';
+// Authentication routes
+require __DIR__.'/auth.php';

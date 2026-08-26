@@ -20,6 +20,24 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Register any authentication / authorization services.
      */
+    // public function boot(): void
+    // {
+    //     $this->registerPolicies();
+
+    //     // Define gates for roles
+    //     Gate::define('admin', function (User $user) {
+    //         return $user->role === 'admin';
+    //     });
+
+    //     Gate::define('manager', function (User $user) {
+    //         return $user->role === 'manager' || $user->role === 'admin';
+    //     });
+
+    //     Gate::define('user', function (User $user) {
+    //         return in_array($user->role, ['user', 'manager', 'admin']);
+    //     });
+    // }
+
     public function boot(): void
     {
         $this->registerPolicies();
@@ -33,8 +51,12 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role === 'manager' || $user->role === 'admin';
         });
 
+        Gate::define('vendor', function (User $user) {
+            return $user->role === 'vendor' || $user->role === 'admin';
+        });
+
         Gate::define('user', function (User $user) {
-            return in_array($user->role, ['user', 'manager', 'admin']);
+            return in_array($user->role, ['user', 'manager', 'admin', 'vendor']);
         });
     }
 }

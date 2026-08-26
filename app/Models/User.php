@@ -79,14 +79,14 @@ class User extends Authenticatable
     /**
      * Get the list of available roles.
      */
-    public static function getRoles(): array
-    {
-        return [
-            'admin' => 'Administrator',
-            'manager' => 'Manager',
-            'user' => 'User',
-        ];
-    }
+    // public static function getRoles(): array
+    // {
+    //     return [
+    //         'admin' => 'Administrator',
+    //         'manager' => 'Manager',
+    //         'user' => 'User',
+    //     ];
+    // }
 
     /**
      * Get the role label.
@@ -110,5 +110,32 @@ class User extends Authenticatable
     public function scopeActive($query)
     {
         return $query->whereNull('deleted_at');
+    }
+
+    // app/Models/User.php - Add these relationships
+    public function cars()
+    {
+        return $this->hasMany(Car::class, 'vendor_id');
+    }
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
+
+    public function isVendor()
+    {
+        return $this->role === 'vendor' || $this->isAdmin();
+    }
+
+    // Add 'vendor' to getRoles method
+    public static function getRoles(): array
+    {
+        return [
+            'admin' => 'Administrator',
+            'manager' => 'Manager',
+            'vendor' => 'Vendor',
+            'user' => 'User',
+        ];
     }
 }

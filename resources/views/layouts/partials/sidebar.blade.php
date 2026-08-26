@@ -1,19 +1,5 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
-
-        {{--  <li class="nav-item nav-profile">
-            <a href="#" class="nav-link">
-                <div class="nav-profile-image">
-                    <span class="login-status online"></span>
-                </div>
-                <div class="nav-profile-text d-flex flex-column">
-                    <span class="font-weight-bold mb-2">{{ Auth::user()->name }}</span>
-                    <span class="text-secondary text-small">{{ Auth::user()->email }}</span>
-                </div>
-                <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
-            </a>
-        </li>  --}}
-
         <li class="nav-item">
             <a class="nav-link" href="{{ route('dashboard') }}">
                 <span class="menu-title">Dashboard</span>
@@ -21,72 +7,97 @@
             </a>
         </li>
 
-        {{--  <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-title">Basic UI Elements</span>
-                <i class="menu-arrow"></i>
-                <i class="mdi mdi-crosshairs-gps menu-icon"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Buttons</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Dropdowns</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Typography</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
+        <!-- Car Search & Listings -->
         <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
-                <span class="menu-title">Forms</span>
-                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+            <a class="nav-link" href="{{ route('cars.index') }}">
+                <span class="menu-title">Browse Cars</span>
+                <i class="mdi mdi-car menu-icon"></i>
             </a>
-            <div class="collapse" id="forms">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Form Elements</a>
-                    </li>
-                </ul>
-            </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-                <span class="menu-title">Charts</span>
-                <i class="mdi mdi-chart-bar menu-icon"></i>
-            </a>
-            <div class="collapse" id="charts">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">ChartJs</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
-                <span class="menu-title">Tables</span>
-                <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-            <div class="collapse" id="tables">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Basic table</a>
-                    </li>
-                </ul>
-            </div>
-        </li>  --}}
 
+        <!-- Vendor Specific Menu -->
+        @can('vendor')
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#vendorMenu" aria-expanded="false" aria-controls="vendorMenu">
+                    <span class="menu-title">Vendor Dashboard</span>
+                    <i class="menu-arrow"></i>
+                    <i class="mdi mdi-store menu-icon"></i>
+                </a>
+                <div class="collapse" id="vendorMenu">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('vendor.cars.create') }}">
+                                <i class="mdi mdi-plus"></i> Add New Car
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('vendor.cars') }}">
+                                <i class="mdi mdi-format-list-bulleted"></i> My Cars
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('vendor.rentals') }}">
+                                <i class="mdi mdi-calendar-clock"></i> My Rentals
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        @elsecan('admin')
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#adminMenu" aria-expanded="false" aria-controls="adminMenu">
+                    <span class="menu-title">Admin Panel</span>
+                    <i class="menu-arrow"></i>
+                    <i class="mdi mdi-shield menu-icon"></i>
+                </a>
+                <div class="collapse" id="adminMenu">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.users') }}">
+                                <i class="mdi mdi-account-multiple"></i> Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.cars') }}">
+                                <i class="mdi mdi-car"></i> Manage Cars
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.vendors') }}">
+                                <i class="mdi mdi-store"></i> Vendors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.rentals') }}">
+                                <i class="mdi mdi-calendar-check"></i> All Rentals
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        @endcan
+
+        <!-- User Menu -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('profile.edit') }}">
-                <span class="menu-title">Profile</span>
-                <i class="mdi mdi-account menu-icon"></i>
+            <a class="nav-link" data-bs-toggle="collapse" href="#userMenu" aria-expanded="false" aria-controls="userMenu">
+                <span class="menu-title">My Bookings</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-calendar menu-icon"></i>
             </a>
+            <div class="collapse" id="userMenu">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('rentals.index') }}">
+                            <i class="mdi mdi-format-list-bulleted"></i> My Rentals
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('profile.edit') }}">
+                            <i class="mdi mdi-account"></i> Profile
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
     </ul>
 </nav>
