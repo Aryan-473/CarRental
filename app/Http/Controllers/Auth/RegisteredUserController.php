@@ -24,6 +24,8 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
@@ -31,20 +33,29 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:user,manager,admin'],
+            'terms' => ['required', 'accepted'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user', // Default role
-            'email_verified_at' => now(), // Auto-verify email
+            'role' => $request->role,
+            'email_verified_at' => now(), // Auto-verify since you disabled email verification
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect based on role
+        if ($user->isAdmin()) {
+            return redirect(route('dashboard'))->with('success', 'Welcome Admin!');
+        } elseif ($user->isManager()) {
+            return redirect(route('dashboard'))->with('success', 'Welcome Manager!');
+        }
+
+        return redirect(route('dashboard'))->with('success', 'Welcome to ' . config('app.name') . '!');
     }
 }

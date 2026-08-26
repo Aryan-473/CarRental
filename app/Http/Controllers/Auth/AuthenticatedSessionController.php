@@ -32,12 +32,12 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         if ($user->isAdmin()) {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
+            return redirect()->intended(route('dashboard'))->with('success', 'Welcome Admin!');
         } elseif ($user->isManager()) {
-            return redirect()->intended(route('manager.dashboard', absolute: false));
+            return redirect()->intended(route('dashboard'))->with('success', 'Welcome Manager!');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard'))->with('success', 'Welcome back, ' . $user->name . '!');
     }
 
     /**
@@ -51,6 +51,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('success', 'You have been logged out successfully.');
     }
 }
