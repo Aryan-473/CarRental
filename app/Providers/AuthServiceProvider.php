@@ -32,5 +32,18 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('user', function (User $user) {
             return in_array($user->role, ['user', 'manager', 'admin', 'vendor']);
         });
+
+        // Additional gates for specific permissions
+        Gate::define('manage-users', function (User $user) {
+            return $user->role === 'admin';
+        });
+
+        Gate::define('manage-rentals', function (User $user) {
+            return in_array($user->role, ['admin', 'vendor']);
+        });
+
+        Gate::define('view-reports', function (User $user) {
+            return in_array($user->role, ['admin', 'manager']);
+        });
     }
 }

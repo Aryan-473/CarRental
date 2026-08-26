@@ -7,6 +7,12 @@ use Illuminate\View\View;
 
 class ManagerController extends Controller
 {
+    public function dashboard(): View
+    {
+        // Add manager dashboard data
+        return view('manager.dashboard');
+    }
+
     public function projects(): View
     {
         return view('manager.projects');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Car;
+use App\Models\Payment;
 use App\Models\Rental;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,6 +11,23 @@ use Illuminate\View\View;
 
 class AdminController extends Controller
 {
+    public function dashboard(): View
+    {
+        $data = [
+            'totalUsers' => User::count(),
+            'totalVendors' => User::where('role', 'vendor')->count(),
+            'totalCars' => Car::count(),
+            'pendingCars' => Car::where('is_approved', false)->count(),
+            'totalRentals' => Rental::count(),
+            'activeRentals' => Rental::whereIn('status', ['confirmed', 'active'])->count(),
+            'totalRevenue' => Payment::where('status', 'completed')->sum('amount'),
+            'recentUsers' => User::latest()->limit(5)->get(),
+            'recentRentals' => Rental::with(['user', 'car'])->latest()->limit(5)->get(),
+        ];
+
+        return view('admin.dashboard', $data);
+    }
+
     public function users(): View
     {
         $users = User::withTrashed()->paginate(15);
@@ -63,5 +81,13 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         return view('admin.rentals', compact('rentals'));
+    }
+
+    public function payments(): View
+    {
+        $payments = Payment::with(['rental.user', 'rental.car'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+        return view('admin.payments', compact('payments'));
     }
 }
