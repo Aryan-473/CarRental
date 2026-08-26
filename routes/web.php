@@ -25,7 +25,7 @@ Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.show');
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -38,9 +38,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/rentals/{rental}', [RentalController::class, 'show'])->name('rentals.show');
     Route::patch('/rentals/{rental}/cancel', [RentalController::class, 'cancel'])->name('rentals.cancel');
 
+    // Admin rental management routes
+    Route::patch('/rentals/{rental}/confirm', [RentalController::class, 'confirm'])->name('rentals.confirm');
+    Route::patch('/rentals/{rental}/complete', [RentalController::class, 'complete'])->name('rentals.complete');
+
     // Payment routes
     Route::get('/payment/{payment}', [PaymentController::class, 'process'])->name('payments.process');
     Route::post('/payment/{payment}/confirm', [PaymentController::class, 'confirm'])->name('payments.confirm');
+    Route::patch('/payment/{payment}/refund', [PaymentController::class, 'refund'])->name('payments.refund');
+
+    Route::get('/payment/{payment}/retry', [PaymentController::class, 'retry'])->name('payments.retry');  // ADD THIS
 
     // Vendor routes
     Route::middleware(['can:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
@@ -48,6 +55,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/cars', [VendorController::class, 'cars'])->name('cars');
         Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
         Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+        Route::get('/cars/{car}/edit', [CarController::class, 'edit'])->name('cars.edit');
+        Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
+        Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
         Route::get('/rentals', [VendorController::class, 'rentals'])->name('rentals');
     });
 
@@ -66,10 +76,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
         Route::get('/cars', [AdminController::class, 'cars'])->name('cars');
         Route::patch('/cars/{car}/approve', [AdminController::class, 'approveCar'])->name('cars.approve');
+        Route::delete('/cars/{car}/reject', [AdminController::class, 'rejectCar'])->name('cars.reject');
         Route::get('/vendors', [AdminController::class, 'vendors'])->name('vendors');
         Route::get('/rentals', [AdminController::class, 'rentals'])->name('rentals');
     });
 });
 
 // Authentication routes
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
